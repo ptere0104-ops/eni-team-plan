@@ -1,7 +1,7 @@
 ﻿{
-  "name": "ENI 团队规划",
-  "short_name": "ENI 团队规划",
-  "description": "ENI 团队规划 · 纯本地算力试算",
+  "name": "雷达团队规划",
+  "short_name": "雷达团队规划",
+  "description": "雷达团队规划 · 纯本地算力试算",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
