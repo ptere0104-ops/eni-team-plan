@@ -1,0 +1,747 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070a10">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="ENI 团队规划">
+<meta name="application-name" content="ENI 团队规划">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" href="./icon-192.png">
+
+<title>ENI 团队规划 · 独立版</title>
+<style>
+  :root{
+    --bg:#070a10; --card:#111823; --card2:#0d131c;
+    --gold:#f2c14e; --gold-d:rgba(242,193,78,.42); --gold-f:rgba(242,193,78,.10);
+    --txt:#e6edf7; --mut:#8b96ad; --line:rgba(255,255,255,.07);
+    --red:#ff5c7a; --green:#7fd6b1;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);overflow-x:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-variant-numeric:tabular-nums}
+  .wrap{max-width:520px;width:100%;margin:0 auto;padding:14px 14px 28px}
+  .cards{display:block}
+  @media (min-width:980px){
+    .wrap{max-width:1260px;padding:16px 22px 34px}
+    .cards{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+      grid-auto-rows:min-content;gap:14px;align-items:start}
+    .cards > .mkcard{margin-bottom:0}
+    .cards > .mkcard:nth-of-type(1){grid-column:1;grid-row:1}
+    .cards > .mkcard:nth-of-type(3){grid-column:1;grid-row:3}
+    .cards > .mkcard:nth-of-type(2){grid-column:1;grid-row:2}
+    .cards > .mkcard:nth-of-type(4){grid-column:1;grid-row:4}
+    .cards > .mkcard:nth-of-type(5){grid-column:2;grid-row:1 / span 4}
+    .tb-2{grid-template-columns:1fr 1fr 1fr}
+  }
+  header{display:flex;align-items:center;gap:8px;margin:6px 2px 14px}
+  header h1{font-size:17px;margin:0;letter-spacing:.5px}
+  header .tag{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:99px;padding:3px 8px}
+  .mkcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+  .sec-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+  .sec-hd h2{font-size:14px;margin:0;font-weight:600;letter-spacing:.3px}
+  .sec-hd .sub{font-size:11px;color:var(--mut)}
+  .tb-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .tb-lb{font-size:11px;color:var(--mut);display:block;margin-bottom:5px}
+  .tb-big{font-size:clamp(19px,5.4vw,25px);font-weight:700;color:var(--gold);letter-spacing:-.4px;line-height:1.15}
+  .rows2{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid var(--line);padding-top:11px}
+  .r2{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px}
+  .r2 span{color:var(--mut);white-space:nowrap}
+  .r2 b{font-weight:600;color:var(--txt)}
+  .tb-hint{margin-top:12px;padding:10px 11px;border-radius:10px;font-size:12px;line-height:1.65;
+    background:rgba(210,153,34,.09);border:1px solid rgba(210,153,34,.24);color:#e7bf6a}
+  .tb-hint.bad{background:rgba(255,92,122,.10);border-color:rgba(255,92,122,.28);color:#ff8fa3}
+  .tb-hint.ok{background:rgba(127,214,177,.09);border-color:rgba(127,214,177,.22);color:var(--green)}
+  .tb-tree svg{display:block;width:100%}
+  .note{font-size:11px;color:var(--mut);line-height:1.7;margin-top:10px}
+  .tb-head,.tb-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr) minmax(0,.95fr) 26px;gap:7px;align-items:center}
+  .tb-head{font-size:11px;color:var(--mut);padding:0 2px 7px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .tb-head span:nth-child(2),.tb-head span:nth-child(3){text-align:right}
+  #tbList{display:flex;flex-direction:column;gap:7px}
+  .tb-row input{width:100%;min-width:0;background:var(--card2);border:1px solid var(--line);border-radius:9px;
+    color:var(--txt);font-size:13px;padding:9px 9px;font-variant-numeric:tabular-nums;outline:none;
+    transition:border-color .15s,background .15s}
+  .tb-row input:focus{border-color:var(--gold-d);background:#0b1220}
+  .tb-row input.amt{text-align:right}
+  .tb-cv{font-size:12px;text-align:right;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .del{background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:8px;
+    width:26px;height:30px;font-size:13px;line-height:1;padding:0;cursor:pointer}
+  .del:active{color:var(--red);border-color:rgba(255,92,122,.4)}
+  .tb-btns{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+  .btn{flex:1;min-width:110px;background:var(--card2);border:1px solid var(--gold-d);color:var(--gold);
+    border-radius:10px;font-size:12.5px;padding:10px 8px;cursor:pointer;font-weight:500}
+  .btn:active{background:rgba(242,193,78,.10)}
+  .btn.ghost{border-color:var(--line);color:var(--mut)}
+  .adv{margin-top:2px}
+  .adv-row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:8px 0;
+    border-bottom:1px dashed rgba(255,255,255,.07)}
+  .adv-row:last-child{border-bottom:0}
+  .adv-row span{color:var(--mut);min-width:0;flex:1 1 auto}
+  .adv-row b{color:var(--gold);flex:0 0 auto;white-space:nowrap}
+  .adv-row b.g{color:var(--green)}
+  .tb-fml{margin:2px 0 10px;padding:11px 12px;border-radius:10px;background:var(--gold-f);
+    border:1px solid var(--gold-d);font-size:12.5px;color:var(--gold);line-height:1.7;word-break:break-word}
+  .tb-tip{font-size:12px;color:#c9d3e2;line-height:1.9;margin-bottom:0}
+  .tb-tip em{color:var(--gold);font-style:normal}
+  #tbStack{overflow-x:auto;overflow-y:hidden;padding:2px 0 8px}
+#tnCanvas{position:relative;margin:0 auto}
+#tnCanvas svg{position:absolute;left:0;top:0;pointer-events:none}
+.tnode{position:absolute;height:24px;box-sizing:border-box;border:1px solid rgba(242,193,78,.5);background:rgba(242,193,78,.10);border-radius:5px;display:flex;align-items:center;justify-content:center}
+.tnode.root{border-color:rgba(242,193,78,.9);background:rgba(242,193,78,.2)}
+.tnode .tn-v{width:100%;height:100%;border:0;background:transparent;color:#f2c14e;text-align:center;font:600 10px/1 Consolas,monospace;outline:none;padding:0;-moz-appearance:textfield}
+.tnode .tn-x{position:absolute;right:-8px;top:-8px;width:16px;height:16px;border-radius:50%;background:#1b2333;border:1px solid rgba(255,143,163,.45);color:#ff8fa3;font:600 11px/15px Arial,sans-serif;text-align:center;cursor:pointer;z-index:3;opacity:.55}
+.tn-plus{position:absolute;width:16px;height:16px;border-radius:50%;background:#111823;border:1px solid rgba(242,193,78,.55);color:#f2c14e;font:600 11px/14px Arial,sans-serif;text-align:center;cursor:pointer;z-index:3;user-select:none}
+.tn-plus:hover{border-color:#f2c14e;background:#1a2233}
+.tn-plus::after{content:'';position:absolute;left:-6px;top:-6px;width:28px;height:28px;border-radius:50%}
+.tnode .tn-x::after{content:'';position:absolute;left:-5px;top:-5px;width:26px;height:26px;border-radius:50%}
+html{-webkit-text-size-adjust:100%;}
+  body{padding-bottom:env(safe-area-inset-bottom);}
+.tnode:hover .tn-x{opacity:1}
+  .tb-stack svg{display:block;width:100%}
+  .lk-tb{display:grid;gap:6px;margin:6px 0 12px}
+  .lk-hd,.lk-row{display:grid;grid-template-columns:minmax(0,1fr) 50px 78px 62px 26px;gap:7px;align-items:center}
+  .lk-hd{font-size:11px;color:var(--mut);padding:0 2px 5px;border-bottom:1px solid var(--line)}
+  .lk-hd span:nth-child(2),.lk-hd span:nth-child(3),.lk-hd span:nth-child(4){text-align:right}
+  .lk-row .lk-nm{font-size:12px;color:var(--txt);white-space:nowrap}
+  .lk-row input{width:100%;min-width:0;background:var(--card2);border:1px solid var(--line);border-radius:8px;
+    color:var(--txt);font-size:12.5px;padding:8px 8px;text-align:right;outline:none;font-variant-numeric:tabular-nums;
+    transition:border-color .15s,background .15s}
+  .lk-row input:focus{border-color:var(--gold-d);background:#0b1220}
+  .lk-row input:disabled{color:var(--mut);opacity:.65}
+  .lk-row .lk-s{font-size:12px;text-align:right;color:var(--gold);white-space:nowrap}
+  .lk-res{display:grid;gap:6px;margin:10px 0 4px;padding-top:10px;border-top:1px solid var(--line)}
+  .tb-sum{font-size:12px;color:var(--mut);margin-bottom:6px;letter-spacing:.3px}
+  .tb-warn{color:#e7bf6a}
+  .foot{font-size:11px;color:var(--mut);line-height:1.75;padding:2px 6px 0}
+  .fold-hd{display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:0}
+  .fold-hd h2{font-size:14px;margin:0;font-weight:600}
+  .fold-caret{color:var(--mut);font-size:12px}
+  .fold-body{display:none}
+  .fold-body.on{display:block;margin-top:12px}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>团队规划</h1>
+    <span class="tag" id="tagN">— 条分支</span>
+    <span class="tag" style="border-color:rgba(127,214,177,.3);color:#7fd6b1">纯本地 · 不联网</span>
+  </header>
+
+  <!-- 1 团队总览 -->
+    <div class="cards">
+  <section class="mkcard">
+    <div class="sec-hd"><h2>团队总览</h2><span class="sub">本地试算</span></div>
+    <div class="tb-2">
+      <div><span class="tb-lb">团队总持币</span><b class="tb-big" id="tbTotal">--</b></div>
+      <div><span class="tb-lb">团队总算力</span><b class="tb-big" id="tbC">--</b></div>
+    </div>
+    <div class="rows2">
+      <div class="r2"><span>每枚算力</span><b id="tbEff">--</b></div>
+      <div class="r2"><span>最大分支</span><b id="tbMax">--</b></div>
+    </div>
+    <div class="tb-hint" id="tbHint">--</div>
+  </section>
+
+  <!-- 2 分支结构 -->
+  <section class="mkcard">
+    <div class="sec-hd"><h2>分支结构</h2><span class="sub">直属分支</span></div>
+    <div id="tbTree" class="tb-tree"></div>
+    <div class="note">方块为该支整条线上合计持币；红框那条是最大分支，只计 ∛，不叠 10 倍。</div>
+  </section>
+
+  <!-- 3 团队分支 -->
+  <section class="mkcard">
+    <div class="sec-hd"><h2>团队分支</h2><span class="sub">单支 ≤ 10,000</span></div>
+    <div class="tb-head"><span>分支</span><span>持币 EVBC</span><span>折算算力</span><span></span></div>
+    <div id="tbList"></div>
+    <div class="tb-btns">
+      <button class="btn" id="btnAdd">＋ 加一条分支</button>
+      <button class="btn ghost" id="btnReset">恢复默认</button>
+    </div>
+    <div class="note">分支 = 你的直属下线，填该支整条线上合计持币；低于 100 EVBC 的地址通常不计入。改动会自动存在本机，下次打开还在。</div>
+  </section>
+
+  <!-- 4 怎么排最划算 -->
+  <section class="mkcard">
+    <div class="sec-hd"><h2>怎么排最划算</h2><span class="sub">官方公式</span></div>
+    <div class="tb-fml">C = ∛P<sub>最大</sub> ＋ Σ<sub>其余</sub>［10×min(P, 10,000) ＋ max(P−10,000, 0)］</div>
+    <div class="adv" id="advBox"></div>
+    <div class="tb-tip" style="margin-top:10px">
+      · 单支吃满 1 万按 <em>10 倍</em>；超出 1 万的部分只按 1 倍，等于掉 10 倍。<br>
+      · 新开一条满 1 万分支 <em>≈ +100,000</em>；给已满分支加 1 万只 +10,000。<br>
+      · 最大那支只计 ∛：1 万→2 万只从 21.5 涨到 27.1，各支尽量等粗。
+    </div>
+    <div class="note">纯本机试算，不联网、不上传；不构成收益承诺。</div>
+  </section>
+
+  <!-- 5 单支结构测算 -->
+  <section class="mkcard">
+    <div class="fold-hd" id="foldHd">
+      <h2>单支结构测算 <span class="tb-warn" style="font-size:11px;font-weight:400">点 ＋ 加下级，数字直接改</span></h2>
+      <span class="fold-caret" id="foldCaret">收起 ▴</span>
+    </div>
+    <div class="fold-body on" id="foldBody">
+      <div class="tb-sum" id="lkFormula">--</div>
+      <div class="tb-stack" id="tbStack"><div id="tnCanvas"></div></div>
+      <div class="lk-res">
+        <div class="r2"><span>支内账号数</span><b id="lkPpl">--</b></div>
+        <div class="r2"><span>支内总量</span><b id="lkP">--</b></div>
+        <div class="r2"><span>折算算力（普通支 10×）</span><b id="lkC10">--</b></div>
+        <div class="r2"><span>若它是最大支（只计 ∛）</span><b id="lkCb">--</b></div>
+      </div>
+      <div class="tb-hint" id="lkHint">--</div>
+      <div class="tb-btns"><button class="btn" id="lkFill">把总量填回团队表「自己」</button><button class="btn ghost" id="lkReset">恢复默认</button></div>
+      <div class="note">这是「一支怎么搭」的推算：每个方块是一个号，方块里就是它自己的 EVBC，连线表示「谁挂在谁下面」。点方块下方的 ＋ 就给这个号挂一个下级（新块默认 0，自己填）；方块右上角的 × 删掉它和它下边的所有号。支内合计就是把整棵树上所有方块的 EVBC 加起来。</div>
+    </div>
+  </section>
+  </div>
+
+  <div class="foot">
+    口径：分支持币由你手工录入，算力按 ENI RADR 官方推广公式本机折算；不含链上实时数据，不读账号、不要登录。<br>
+    独立版由 ENITools V4「持币分析 › 团队规划」抽出，2026-11-20。
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var KEY = 'eni_tp_standalone_v1';
+  var DEF = [['自己',3800], ['新分支',10000], ['新分支',10000]];
+
+  /* ---------- 数字格式 ---------- */
+  function fmt(n){
+    var v = Number(n) || 0;
+    var s = v.toFixed(2).split('.');
+    s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return s.join('.');
+  }
+  function fmtInt(n){
+    var v = Math.round(Number(n) || 0);
+    return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  function shortC(n){
+    if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    if (n >= 1000) return (n >= 100000 ? Math.round(n/1000) : Math.round(n/100)/10) + 'K';
+    return String(Math.round(n*10)/10);
+  }
+  function esc(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ---------- 核心公式 ---------- */
+  // C = ∛P最大 + Σ其余[10*min(P,10000) + max(P-10000,0)]
+  function calc(list){
+    var n = list.length;
+    if (!n) return {C:0, total:0, maxI:-1, rows:[], over:[]};
+    var maxI = 0, i;
+    for (i = 1; i < n; i++) if (list[i].amt > list[maxI].amt) maxI = i;
+    var C = Math.cbrt(list[maxI].amt), total = 0, rows = [], over = [];
+    for (i = 0; i < n; i++){
+      var amt = list[i].amt;
+      total += amt;
+      if (i === maxI){
+        rows.push({nm:list[i].nm, amt:amt, kind:'max', contrib:Math.cbrt(amt)});
+      } else {
+        var g = 10 * Math.min(amt, 10000) + Math.max(amt - 10000, 0);
+        C += g;
+        rows.push({nm:list[i].nm, amt:amt, kind:(amt > 10000 ? 'over' : 'norm'), contrib:g});
+        if (amt > 10000) over.push(list[i].nm);
+      }
+    }
+    return {C:C, total:total, maxI:maxI, rows:rows, over:over};
+  }
+
+  // 把超过 1 万的支按 1 万拆成多条，重算
+  function splitList(list){
+    var out = [], changed = false;
+    list.forEach(function(x){
+      if (x.amt > 10000){
+        changed = true;
+        var k = Math.floor(x.amt / 10000), rem = x.amt - k * 10000, j;
+        for (j = 0; j < k; j++) out.push({nm: x.nm + (k > 1 ? '·' + (j+1) : ''), amt:10000});
+        if (rem >= 1) out.push({nm: x.nm + (k > 0 ? '·余' : ''), amt:rem});
+      } else {
+        out.push({nm:x.nm, amt:x.amt});
+      }
+    });
+    return {list:out, changed:changed};
+  }
+
+  /* ---------- 状态 ---------- */
+  var list = load();
+  // 首次打开把初始数据落盘，之后一律以本机存的那份为准
+  try { if (!localStorage.getItem(KEY)) save(); } catch(e) {}
+
+  function load(){
+    try{
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return DEF.map(function(x){ return {nm:x[0], amt:x[1]}; });
+      var arr = JSON.parse(raw);
+      if (!Array.isArray(arr) || !arr.length) throw 0;
+      return arr.map(function(x, i){
+        return {nm: String(x.nm || ('分支 ' + (i+1))), amt: Math.max(0, Number(x.amt) || 0)};
+      });
+    }catch(e){
+      return DEF.map(function(x){ return {nm:x[0], amt:x[1]}; });
+    }
+  }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(list)); }catch(e){}
+  }
+
+  /* ---------- 渲染：分支表 ---------- */
+  function renderRows(){
+    var box = document.getElementById('tbList');
+    box.innerHTML = list.map(function(x, i){
+      return '<div class="tb-row">' +
+        '<input class="nm" data-i="' + i + '" data-f="nm" value="' + esc(x.nm) + '" maxlength="14">' +
+        '<input class="amt" data-i="' + i + '" data-f="amt" inputmode="decimal" value="' + (x.amt ? String(x.amt) : '') + '" placeholder="0">' +
+        '<span class="tb-cv" id="cv' + i + '">--</span>' +
+        '<button class="del" data-del="' + i + '" aria-label="删除这条">&times;</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* ---------- 渲染：树 ---------- */
+  function treeSvg(l, maxI){
+    var n = l.length, show = Math.min(n, 5);
+    var W = 360, x0 = 8, x1 = W - 8, gap = 5, cols = show + 1;
+    var bw = (x1 - x0 - gap * (cols - 1)) / cols;
+    var y0 = 2, h0 = 26, h1 = 34, lyMid = y0 + h0, lyEnd = lyMid + 13, H = lyEnd + h1 + 6, cx = W / 2;
+    var line = 'rgba(242,193,78,.42)';
+    var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" preserveAspectRatio="xMidYMid meet">';
+    o += '<rect x="' + (cx - 52) + '" y="' + y0 + '" width="104" height="' + h0 + '" rx="6" fill="rgba(242,193,78,.10)" stroke="rgba(242,193,78,.7)"/>';
+    o += '<text x="' + cx + '" y="' + (y0 + 17) + '" text-anchor="middle" fill="#f2c14e" font-size="11">主账号</text>';
+    o += '<line x1="' + cx + '" y1="' + lyMid + '" x2="' + cx + '" y2="' + lyEnd + '" stroke="' + line + '"/>';
+    var fx = x0 + bw / 2, lx = x0 + bw / 2 + (cols - 1) * (bw + gap);
+    if (cols > 1){
+      o += '<line x1="' + fx + '" y1="' + (lyMid + 6) + '" x2="' + lx + '" y2="' + (lyMid + 6) + '" stroke="' + line + '"/>';
+    }
+    for (var i = 0; i < cols; i++){
+      var xi = x0 + bw / 2 + i * (bw + gap);
+      if (cols > 1) o += '<line x1="' + xi + '" y1="' + (lyMid + 6) + '" x2="' + xi + '" y2="' + lyEnd + '" stroke="' + line + '"/>';
+      if (i < show){
+        var isMax = (n > 1 && i === maxI);
+        var st = isMax ? 'rgba(255,92,122,.85)' : 'rgba(242,193,78,.42)';
+        var fl = isMax ? 'rgba(255,92,122,.12)' : 'rgba(255,255,255,.035)';
+        o += '<rect x="' + (xi - bw / 2) + '" y="' + lyEnd + '" width="' + bw + '" height="' + h1 + '" rx="5" fill="' + fl + '" stroke="' + st + '"/>';
+        var nm = l[i].nm.length > 4 ? l[i].nm.slice(0, 4) : l[i].nm;
+        o += '<text x="' + xi + '" y="' + (lyEnd + 13) + '" text-anchor="middle" fill="#e6edf7" font-size="9.5">' + esc(nm) + '</text>';
+        var vt = (isMax && l[i].amt > 0 ? '∛ ' : '') + fmtInt(l[i].amt);
+        o += '<text x="' + xi + '" y="' + (lyEnd + 26) + '" text-anchor="middle" fill="' + (isMax ? '#ff8fa3' : '#f2c14e') + '" font-size="9">' + vt + '</text>';
+      } else {
+        o += '<rect x="' + (xi - bw / 2) + '" y="' + lyEnd + '" width="' + bw + '" height="' + h1 + '" rx="5" fill="none" stroke="rgba(242,193,78,.24)" stroke-dasharray="3 3"/>';
+        o += '<text x="' + xi + '" y="' + (lyEnd + 21) + '" text-anchor="middle" fill="#8b96ad" font-size="13">⋯</text>';
+      }
+    }
+    return o + '</svg>';
+  }
+
+  /* ---------- 渲染：单支层级示意 ---------- */
+    /* ---------- 单支层级测算（可编辑、可增删层） ---------- */
+  /* ---------- 单支结构测算：思维导图式，每个方块自己点 ＋ 挂下级 ---------- */
+  var TKEY = 'eni_tp_tree_v1';
+  var TMAXN = 80, TMAXD = 6, NH = 24, GAPY = 36;
+
+  function Tn(v, c){ return {v: (v == null ? 0 : v), c: c || []}; }
+
+  function tDef(){
+    var root = Tn(200);
+    for (var i = 0; i < 3; i++){
+      var a = Tn(200);
+      for (var j = 0; j < 3; j++){
+        var b = Tn(200);
+        b.c.push(Tn(200));
+        a.c.push(b);
+      }
+      root.c.push(a);
+    }
+    return root;
+  }
+
+  var tree = (function(){
+    try{
+      var sv = localStorage.getItem(TKEY);
+      if (sv){
+        var o = JSON.parse(sv);
+        if (o && typeof o === 'object' && isFinite(o.v) && o.c && o.c.length >= 0) return o;
+      }
+    }catch(e){}
+    return tDef();
+  })();
+
+  function tSave(){ try{ localStorage.setItem(TKEY, JSON.stringify(tree)); }catch(e){} }
+
+  function tCount(n){ var k = 1; n.c.forEach(function(c){ k += tCount(c); }); return k; }
+  function tLeaf(n){ return n.c.length ? n.c.reduce(function(x, c){ return x + tLeaf(c); }, 0) : 1; }
+  function tDeep(n){ return n.c.length ? 1 + Math.max.apply(null, n.c.map(tDeep)) : 0; }
+
+  function tAt(path){
+    var parts = String(path).split('-'), n = tree, i;
+    for (i = 1; i < parts.length; i++){
+      var k = Number(parts[i]);
+      if (!n.c || !n.c[k]) return null;
+      n = n.c[k];
+    }
+    return n;
+  }
+
+  function tStats(){
+    var ppl = 0, tot = 0;
+    (function w(n){ ppl++; tot += n.v; n.c.forEach(w); })(tree);
+    var c10 = 10 * Math.min(tot, 10000) + Math.max(tot - 10000, 0);
+    return {ppl: ppl, tot: tot, c10: c10, cb: Math.cbrt(tot)};
+  }
+
+  function tLevels(){
+    var a = [];
+    (function w(n, d){ a[d] = (a[d] || 0) + 1; n.c.forEach(function(c){ w(c, d + 1); }); })(tree, 0);
+    return a;
+  }
+
+  function tStatsView(){
+    var st = tStats(), lv = tLevels();
+    document.getElementById('lkFormula').innerHTML =
+      '按层 ' + lv.join(' → ') + ' ｜ 支内 ' + st.ppl + ' 个号 ＝ <b>' + fmtInt(st.tot) + '</b>';
+    document.getElementById('lkPpl').textContent = st.ppl + ' 个号';
+    document.getElementById('lkP').textContent = fmt(st.tot);
+    document.getElementById('lkC10').textContent = fmt(st.c10);
+    document.getElementById('lkCb').textContent = fmt(st.cb);
+
+    var hb = document.getElementById('lkHint'), cls = 'tb-hint', txt;
+    if (st.tot <= 0){
+      txt = '还没填 EVBC：点方块里的数字直接改，点方块下方的 ＋ 给这个号挂下级。';
+      cls += ' ok';
+    } else if (st.tot > 10000){
+      txt = '⚠ 支内合计 ' + fmtInt(st.tot) + '，已超 1 万红线：超出的 ' + fmtInt(st.tot - 10000) +
+            ' 只按 1 倍计，比拆成两支少 ' + fmtInt((st.tot - 10000) * 9) + ' 算力。';
+      cls += ' bad';
+    } else {
+      txt = '支内合计 ' + fmtInt(st.tot) + '，在 1 万红线内，整支按 10 倍折算 = ' + fmtInt(st.c10) +
+            '；离红线还差 ' + fmtInt(10000 - st.tot) + '。';
+      cls += ' ok';
+    }
+    hb.className = cls;
+    hb.textContent = txt;
+  }
+
+  function tRender(){
+    var wrap = document.getElementById('tbStack'), cv = document.getElementById('tnCanvas');
+    var CW = wrap.clientWidth || 340, pad = 8;
+    var leaf = tLeaf(tree);
+    var avail = Math.max(120, CW - pad * 2);
+    var cw = Math.min(88, avail / leaf);
+    if (cw < 30) cw = 30;
+    var focusPath = null;
+
+    var slots = 0, nodes = [];
+    function place(n, d, path){
+      var rec = {n: n, d: d, path: path, cx: 0, y: pad + d * (NH + GAPY), kids: []};
+      nodes.push(rec);
+      if (!n.c.length){
+        rec.cx = (slots + 0.5) * cw + pad;
+        slots++;
+      } else {
+        rec.kids = n.c.map(function(c, k){ return place(c, d + 1, path + '-' + k); });
+        rec.cx = (rec.kids[0].cx + rec.kids[rec.kids.length - 1].cx) / 2;
+      }
+      return rec;
+    }
+    place(tree, 0, '0');
+
+    var usedW = slots * cw + pad * 2;
+    var W = Math.max(CW, usedW);
+    var off = usedW < CW ? (CW - usedW) / 2 : 0;
+    nodes.forEach(function(r){ r.cx += off; });
+
+    var H = pad + tDeep(tree) * (NH + GAPY) + NH + GAPY / 2 + 6;
+    cv.style.width = W + 'px';
+    cv.style.height = H + 'px';
+    wrap.style.height = (H + 10) + 'px';
+
+    var line = 'rgba(242,193,78,.42)', o = '', h = '', i, j;
+    for (i = 0; i < nodes.length; i++){
+      var r = nodes[i];
+      for (j = 0; j < r.kids.length; j++){
+        var k = r.kids[j], mid = (r.y + NH + k.y) / 2;
+        o += '<path d="M' + r.cx + ' ' + (r.y + NH) + ' L' + r.cx + ' ' + mid + ' L' + k.cx + ' ' + mid +
+             ' L' + k.cx + ' ' + k.y + '" fill="none" stroke="' + line + '" stroke-width="1"/>';
+      }
+    }
+
+    for (i = 0; i < nodes.length; i++){
+      var r = nodes[i];
+      var nw = Math.min(cw - 5, 78);
+      if (nw < 22) nw = 22;
+      var fs = nw >= 48 ? 10 : (nw >= 32 ? 9 : 8);
+      h += '<div class="tnode' + (r.d === 0 ? ' root' : '') + '" data-p="' + r.path + '" style="left:' +
+           (r.cx - nw / 2) + 'px;top:' + r.y + 'px;width:' + nw + 'px">' +
+           '<input class="tn-v" data-pv="' + r.path + '" value="' + r.n.v + '" style="font-size:' + fs + 'px" inputmode="numeric">' +
+           (r.d === 0 ? '' : '<b class="tn-x" data-x="' + r.path + '">×</b>') +
+           '</div>' +
+           '<div class="tn-plus" data-plus="' + r.path + '" style="left:' + (r.cx - 8) + 'px;top:' +
+           (r.y + NH + GAPY / 2 - 8) + 'px">+</div>';
+    }
+
+    cv.innerHTML = '<svg width="' + W + '" height="' + H + '">' + o + '</svg>' + h;
+    tStatsView();
+  }
+
+  function tBind(){
+    var wrap = document.getElementById('tbStack');
+
+    wrap.addEventListener('input', function(e){
+      var t = e.target;
+      if (!t.classList || !t.classList.contains('tn-v')) return;
+      var n = tAt(t.getAttribute('data-pv'));
+      if (!n) return;
+      var v = parseFloat(String(t.value).replace(/[^0-9.]/g, ''));
+      n.v = (isFinite(v) && v > 0) ? v : 0;
+      tSave();
+      tStatsView();
+    });
+
+    wrap.addEventListener('focusout', function(e){
+      var t = e.target;
+      if (!t.classList || !t.classList.contains('tn-v')) return;
+      var n = tAt(t.getAttribute('data-pv'));
+      if (n) t.value = n.v;
+    });
+
+    wrap.addEventListener('click', function(e){
+      var t = e.target;
+
+      if (t.classList && t.classList.contains('tn-plus')){
+        var path = t.getAttribute('data-plus'), n = tAt(path);
+        if (!n) return;
+        if (tCount(tree) >= TMAXN){ alert('最多 ' + TMAXN + ' 个号'); return; }
+        var d = path.split('-').length - 1;
+        if (n.c.length && d + 1 >= TMAXD){ alert('最多 ' + TMAXD + ' 层'); return; }
+        if (!n.c.length && d + 1 >= TMAXD){ alert('最多 ' + TMAXD + ' 层'); return; }
+        n.c.push(Tn(0));
+        tSave();
+        tRender();
+        var ni = document.querySelector('.tnode[data-p="' + path + '-' + (n.c.length - 1) + '"] .tn-v');
+        if (ni){ ni.focus(); if (ni.select) ni.select(); }
+        return;
+      }
+
+      if (t.classList && t.classList.contains('tn-x')){
+        var p2 = t.getAttribute('data-x');
+        if (p2 === '0'){ alert('主号不能删'); return; }
+        var parts = p2.split('-'), par = tAt(parts.slice(0, -1).join('-'));
+        if (!par) return;
+        var kk = Number(parts[parts.length - 1]);
+        var sub = par.c[kk] ? tCount(par.c[kk]) : 0;
+        if (sub > 1 && !confirm('这会连同它下面的 ' + (sub - 1) + ' 个号一起删掉，继续？')) return;
+        par.c.splice(kk, 1);
+        tSave();
+        tRender();
+      }
+    });
+
+    document.getElementById('lkReset').addEventListener('click', function(){
+      tree = tDef();
+      tSave();
+      tRender();
+    });
+
+    document.getElementById('lkFill').addEventListener('click', function(){
+      var st = tStats();
+      if (st.tot <= 0){ alert('支内总量是 0，先把方块里的 EVBC 填上。'); return; }
+      if (st.tot > 10000 && !confirm('这支合计 ' + fmtInt(st.tot) + '，已超 1 万红线，超出部分只按 1 倍计。仍然填回？')) return;
+      var idx = -1, i;
+      for (i = 0; i < list.length; i++){
+        if (String(list[i].nm).replace(/\s/g, '') === '自己'){ idx = i; break; }
+      }
+      if (!list.length){
+        list.push({nm: '自己', amt: st.tot});
+      } else {
+        if (idx < 0) idx = 0;
+        list[idx].nm = '自己';
+        list[idx].amt = st.tot;
+      }
+      save(); renderRows(); render();
+    });
+  }
+
+  function initLK(){
+    tRender();
+    tBind();
+  }
+
+/* ---------- 主渲染 ---------- */
+  function render(){
+    var c = calc(list);
+
+    // 表格折算列
+    c.rows.forEach(function(r, i){
+      var el = document.getElementById('cv' + i);
+      if (!el) return;
+      if (r.amt <= 0){ el.textContent = '--'; el.style.color = '#8b96ad'; return; }
+      if (r.kind === 'max'){
+        el.textContent = '∛ = ' + fmt(r.contrib);
+        el.style.color = '#ff8fa3';
+      } else {
+        el.textContent = fmt(r.contrib);
+        el.style.color = (r.kind === 'over') ? '#ff8fa3' : '#7fd6b1';
+      }
+    });
+
+    // 总览
+    document.getElementById('tbC').textContent = c.total > 0 ? fmt(c.C) : '--';
+    document.getElementById('tbTotal').textContent = c.total > 0 ? fmt(c.total) : '--';
+    document.getElementById('tbEff').textContent = c.total > 0 ? (c.C / c.total).toFixed(2) : '--';
+    document.getElementById('tbMax').textContent = (c.total > 0 && c.maxI >= 0)
+      ? (list[c.maxI].nm + ' · ' + fmt(list[c.maxI].amt)) : '--';
+    document.getElementById('tagN').textContent = list.length + ' 条分支';
+
+    // 提示
+    var hb = document.getElementById('tbHint'), txt, cls = 'tb-hint';
+    if (!list.length){
+      txt = '还没有分支，点下面「加一条分支」开始录。'; cls += ' ok';
+    } else if (c.over.length){
+      txt = '⚠ ' + c.over.join('、') + ' 已超 1 万，超出部分只按 1 倍计（掉 10 倍）。新人应开成新分支，不要往这支里加。';
+      cls += ' bad';
+    } else if (list.length === 1){
+      txt = '只有 1 条分支时，整支只计 ∛，几乎不产生推广算力。至少铺 3 条以上。';
+      cls += ' bad';
+    } else {
+      txt = '目前 ' + list.length + ' 条分支都未超红线。再开一条满 1 万的新分支 ≈ +100,000 算力；给最大那支加币几乎无增益。';
+      cls += ' ok';
+    }
+    hb.className = cls;
+    hb.textContent = txt;
+
+    // 树
+    document.getElementById('tbTree').innerHTML = list.length
+      ? treeSvg(list, c.maxI)
+      : '<div class="note" style="margin:0">还没有分支，先在上面加一条。</div>';
+
+    // 建议
+    renderAdv(c);
+  }
+
+  function renderAdv(c){
+    var box = document.getElementById('advBox');
+    if (!list.length || c.total <= 0){ box.innerHTML = ''; return; }
+    var rows = [];
+
+    // ① 再加一条满 1 万（需多投 1 万币）
+    var addOne = calc(list.concat([{nm:'新分支', amt:10000}]).map(function(x){return {nm:x.nm, amt:x.amt};}));
+    var gain1 = addOne.C - c.C;
+    rows.push(['再开一条满 1 万的新分支（要多投 1 万）', '+' + fmt(gain1), gain1 > 0 ? 'g' : '']);
+
+    // ② 把超 1 万的支拆成多条 1 万（不增币，只改结构）
+    var sp = splitList(list);
+    if (sp.changed){
+      var c2 = calc(sp.list);
+      rows.push(['把超额分支按 1 万拆开（' + list.length + ' → ' + sp.list.length + ' 条，不增币）',
+                 '+' + fmt(c2.C - c.C), 'g']);
+    }
+
+    // ③ 给最大支再加 1 万（反面教材）
+    if (c.maxI >= 0){
+      var withMax = list.map(function(x, i){ return {nm:x.nm, amt: i === c.maxI ? x.amt + 10000 : x.amt}; });
+      var cm = calc(withMax);
+      rows.push(['给最大分支「' + list[c.maxI].nm + '」再加 1 万（要多投 1 万）', '+' + fmt(cm.C - c.C), '']);
+    }
+
+    // ④ 同样的币、同样的条数，改成等粗分配
+    var total = c.total, n = list.length;
+    if (n > 1){
+      var even = [], per = total / n;
+      for (var j = 0; j < n; j++) even.push({nm:'支' + (j+1), amt:per});
+      var ce = calc(even);
+      var d = ce.C - c.C;
+      rows.push(['同样 ' + fmtInt(total) + ' 币，平均分给 ' + n + ' 条（各 ' + fmtInt(per) + '，不增币）',
+                 (d > 0.01 ? '+' + fmt(d) : (d < -0.01 ? fmt(d) : '已是最优')), d > 0.01 ? 'g' : '']);
+    }
+
+    box.innerHTML = rows.map(function(r){
+      return '<div class="adv-row"><span>' + esc(r[0]) + '</span><b class="' + r[2] + '">' + esc(r[1]) + '</b></div>';
+    }).join('');
+  }
+
+  /* ---------- 交互 ---------- */
+  document.getElementById('tbList').addEventListener('input', function(e){
+    var t = e.target;
+    if (!t.dataset || t.dataset.f == null) return;
+    var i = Number(t.dataset.i);
+    if (!list[i]) return;
+    if (t.dataset.f === 'nm'){
+      list[i].nm = t.value;
+    } else {
+      var v = parseFloat(String(t.value).replace(/,/g, ''));
+      list[i].amt = (isFinite(v) && v > 0) ? v : 0;
+      var cv = document.getElementById('cv' + i);
+      if (cv){ cv.style.color = '#7fd6b1'; }
+    }
+    save();
+    render();
+  });
+
+  document.getElementById('tbList').addEventListener('click', function(e){
+    var t = e.target;
+    if (t.tagName !== 'BUTTON' || t.dataset.del == null) return;
+    var i = Number(t.dataset.del);
+    list.splice(i, 1);
+    save();
+    renderRows();
+    render();
+  });
+
+  document.getElementById('btnAdd').addEventListener('click', function(){
+    if (list.length >= 20){ alert('最多 20 条分支'); return; }
+    list.push({nm:'新分支', amt:10000});
+    save();
+    renderRows();
+    render();
+    var ins = document.querySelectorAll('#tbList input.nm');
+    if (ins.length) { var last = ins[ins.length-1]; last.focus(); last.select(); }
+  });
+
+  document.getElementById('btnReset').addEventListener('click', function(){
+    if (!confirm('恢复成默认示例（自己 3,800 ＋ 两条 10,000）？当前录入会被覆盖。')) return;
+    list = DEF.map(function(x){ return {nm:x[0], amt:x[1]}; });
+    save();
+    renderRows();
+    render();
+  });
+
+  document.getElementById('foldHd').addEventListener('click', function(){
+    var b = document.getElementById('foldBody'), c = document.getElementById('foldCaret');
+    var on = b.classList.toggle('on');
+    c.textContent = on ? '收起 ▴' : '展开 ▾';
+    if (on) setTimeout(function(){ try{ tRender(); }catch(e){} }, 30);
+  });
+
+  window.addEventListener('resize', function(){
+    clearTimeout(window.__tnT);
+    window.__tnT = setTimeout(function(){ try{ tRender(); }catch(e){} }, 120);
+  });
+
+  /* ---------- 启动 ---------- */
+  initLK();
+  renderRows();
+  render();
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
